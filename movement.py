@@ -1,5 +1,6 @@
 import time
 import RPi.GPIO as GPIO
+import keyboard
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
@@ -78,4 +79,11 @@ forward = car.drive_forward()
 
 reverse  = car.drive_backward()
 
-
+while True:
+    if keyboard.is_pressed("w"):
+        car.drive_forward(50)
+    if keyboard.is_pressed("s"):
+        car.drive_backward(50)
+    if keyboard.is_pressed("x"):
+        car.drive_stop()
+        
