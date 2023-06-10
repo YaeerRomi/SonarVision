@@ -1,24 +1,23 @@
 import cv2
 import numpy as np
+from ultralytics import YOLO
 
-
-
+# ADD LANE DETECTION TO THIS FILE
 
 class Vision: 
-
     def __init__(self):
-        self.stop_data = cv2.CascadeClassifier('stop_data.xml')
+
         self.cam = cv2.VideoCapture(0)
+        self.model = YOLO("best.pt")
 
     def __del__(self):
         self.cam.release()
 
     def findStopSigns(self):
-        ret,frame=self.cam.read()
-        gray_frame=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+        res,frame=self.cam.read()
 
-        found = self.stop_data.detectMultiScale(gray_frame, minSize =(20, 20))
-        
-        if len(found) != 0:
-            return (True, found)
-    
+        results = self.model.track(source=frame, conf=0.8)
+        if len(results[0].boxes) > 0:
+            return True
+        return False
+
