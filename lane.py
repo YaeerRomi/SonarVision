@@ -1,29 +1,30 @@
 import cv2
 import numpy as np
 import lane_detection_utils as utils
-
+ 
 curveList = []
-avgVal = 10
-
-def getLaneCurve(img, display=2):
+avgVal=10
+ 
+def getLaneCurve(img,display=2):
+ 
     imgCopy = img.copy()
     imgResult = img.copy()
 
     imgThres = utils.thresholding(img)
-
+ 
     hT, wT, c = img.shape
-    points = utils.valTrackbars(wT, hT)  # Replace this line with your desired preset values
-    imgWarp = utils.warpImg(imgThres, points, wT, hT)
-    imgWarpPoints = utils.drawPoints(imgCopy, points)
-
-    middlePoint, imgHist = utils.getHistogram(imgWarp, display=True, minPer=0.5, region=4)
+    points = utils.valTrackbars()
+    imgWarp = utils.warpImg(imgThres,points,wT,hT)
+    imgWarpPoints = utils.drawPoints(imgCopy,points)
+ 
+    middlePoint,imgHist = utils.getHistogram(imgWarp,display=True,minPer=0.5,region=4)
     curveAveragePoint, imgHist = utils.getHistogram(imgWarp, display=True, minPer=0.9)
     curveRaw = curveAveragePoint - middlePoint
 
     curveList.append(curveRaw)
-    if len(curveList) > avgVal:
+    if len(curveList)>avgVal:
         curveList.pop(0)
-    curve = int(sum(curveList) / len(curveList))
+    curve = int(sum(curveList)/len(curveList))
 
     if display != 0:
         imgInvWarp = utils.warpImg(imgWarp, points, wT, hT, inv=True)
@@ -41,31 +42,26 @@ def getLaneCurve(img, display=2):
             w = wT // 20
             cv2.line(imgResult, (w * x + int(curve // 50), midY - 10),
                      (w * x + int(curve // 50), midY + 10), (0, 0, 255), 2)
-
+        #fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer);
+        #cv2.putText(imgResult, 'FPS ' + str(int(fps)), (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (230, 50, 50), 3);
     if display == 2:
         imgStacked = utils.stackImages(0.7, ([img, imgWarpPoints, imgWarp],
                                              [imgHist, imgLaneColor, imgResult]))
         cv2.imshow('ImageStack', imgStacked)
     elif display == 1:
-        cv2.imshow('Result', imgResult)
-
-    curve = curve / 100
-    if curve > 1:
-        curve = 1
-    if curve < -1:
-        curve = -1
-
+        cv2.imshow('Resutlt', imgResult)
+ 
+    #### NORMALIZATION
+    curve = curve/100
+    if curve>1: curve ==1
+    if curve<-1:curve == -1
+ 
     return curve
-
-
+ 
+ 
 if __name__ == '__main__':
-<<<<<<< Updated upstream
-    cap = cv2.VideoCapture('vid1.mp4')
-    intialTrackBarVals = [102, 80, 20, 214]
-=======
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture()
     intialTrackBarVals = [102, 80, 20, 214 ]
->>>>>>> Stashed changes
     utils.initializeTrackbars(intialTrackBarVals)
     frameCounter = 0
     while True:
@@ -73,18 +69,10 @@ if __name__ == '__main__':
         if cap.get(cv2.CAP_PROP_FRAME_COUNT) == frameCounter:
             cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
             frameCounter = 0
-
+ 
         success, img = cap.read()
-        if not success:
-            break
-        
-        img = cv2.resize(img, (480, 240))
-        curve = getLaneCurve(img, display=2)
+        img = cv2.resize(img,(480,240))
+        curve = getLaneCurve(img,display=2)
         print(curve)
-        cv2.imshow('Vid', img)
-        
-        if cv2.waitKey(1) & 0xFF == ord('q'):  # Exit loop if 'q' key is pressed
-            break
-
-    cap.release()
-cv2.destroyAllWindows()
+        #cv2.imshow('Vid',img)
+        cv2.waitKey(1)
