@@ -59,8 +59,13 @@ def getLaneCurve(img, display=2):
 
 
 if __name__ == '__main__':
+<<<<<<< Updated upstream
     cap = cv2.VideoCapture('vid1.mp4')
     intialTrackBarVals = [102, 80, 20, 214]
+=======
+    cap = cv2.VideoCapture(0)
+    intialTrackBarVals = [102, 80, 20, 214 ]
+>>>>>>> Stashed changes
     utils.initializeTrackbars(intialTrackBarVals)
     frameCounter = 0
     while True:
